@@ -1,8 +1,13 @@
 FROM python:3.10
+
 WORKDIR /app
-RUN apt-get update && apt-get install -y default-mysql-client
-COPY . .
+
+# Install netcat to check MySQL port
+RUN apt-get update && apt-get install -y netcat-openbsd
+
+COPY requirements.txt .
 RUN pip install -r requirements.txt
-CMD sh -c "until mysqladmin ping -h $DB_HOST -u$DB_USER -p$DB_PASSWORD --silent; do echo 'Waiting for MySQL...'; sleep 3; done; echo 'MySQL is ready!'; pytest --html=report.html --self-contained-html"
 
+COPY . .
 
+CMD sh -c "until nc -z $DB_HOST 3306; do echo 'Waiting for MySQL port...'; sleep 3; done; echo 'MySQL is ready!'; pytest --html=report.html --self-contained-html"
