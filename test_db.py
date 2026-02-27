@@ -1,18 +1,22 @@
 import pymysql
 import pytest
-
+import os
 @pytest.fixture(scope="module")
 def db_connection():
     connection = pymysql.connect(
-        host="localhost",
-        user="root",
-        password="root123",
-        database="automation_db",
-        port=3306
+        host=os.getenv("DB_HOST","localhost"),
+        user=os.getenv("DB_USER","root"),
+        password=os.getenv("DB_PASSWORD","root"),
+        database=os.getenv("DB_NAME","testdb")
+    
     )
     yield connection
     connection.close()
 
+def test_create_table(db_connection):
+    cursor = db_connection.cursor()
+    cursor.execute("CREATE TABLE users( name VARCHAR(100), email VARCHAR(100))")
+    db_connection.commit()
 
 def test_create_user(db_connection):
     cursor = db_connection.cursor()
