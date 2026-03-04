@@ -13,7 +13,7 @@ def db_connection():
     yield connection
     connection.close()
 
-def test_create_table(db_connection):
+def test_create_table_for_db(db_connection):
     cursor = db_connection.cursor()
     cursor.execute("CREATE TABLE users( name VARCHAR(100), email VARCHAR(100))")
     db_connection.commit()
